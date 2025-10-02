@@ -7,9 +7,9 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-gradient-to-r from-white to-blue-50 shadow-sm border-b border-gray-100">
+      <header className="liquid-glass shadow-sm border-b border-green-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
@@ -35,7 +35,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-blue-50 to-green-50">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 content-glass">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold text-gray-800 mb-6">
             Smart Sheep Management Made Easy
@@ -62,7 +62,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-100">
+      <section className="py-20 content-glass">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
@@ -74,8 +74,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <div className="liquid-glass p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-200 to-green-300 rounded-lg flex items-center justify-center mb-4">
                 <Heart className="h-6 w-6 text-blue-500" />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">AI Health Tracking</h3>
@@ -84,8 +84,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <div className="liquid-glass p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-200 to-green-300 rounded-lg flex items-center justify-center mb-4">
                 <Sheep className="h-6 w-6 text-green-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Breeding Management</h3>
@@ -94,8 +94,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <div className="liquid-glass p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-200 to-green-300 rounded-lg flex items-center justify-center mb-4">
                 <TrendingUp className="h-6 w-6 text-blue-500" />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Financial Insights</h3>
@@ -104,8 +104,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <div className="liquid-glass p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-200 to-green-300 rounded-lg flex items-center justify-center mb-4">
                 <FileText className="h-6 w-6 text-blue-500" />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Smart Reports</h3>
@@ -131,7 +131,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8 text-blue-500" />
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Admin</h3>
@@ -139,7 +139,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sheep className="h-8 w-8 text-green-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Farmer</h3>
@@ -147,7 +147,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-blue-500" />
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Veterinarian</h3>
@@ -155,7 +155,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-blue-500" />
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Staff</h3>
@@ -184,12 +184,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 py-12">
+      <footer className="liquid-glass py-12 border-t border-green-200/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center text-gray-800">
             <Sheep className="h-6 w-6 text-green-400 mr-2" />
-            <span className="text-white font-semibold">SheepTracker</span>
-            <span className="text-gray-400 ml-4">© 2025 Smart Sheep Management System</span>
+            <span className="text-gray-800 font-semibold">SheepTracker</span>
+            <span className="text-gray-600 ml-4">© 2025 Smart Sheep Management System</span>
           </div>
         </div>
       </footer>

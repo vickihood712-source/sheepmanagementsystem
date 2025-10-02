@@ -219,7 +219,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
 
       {/* Financial Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-green-400" />
             <div className="ml-4">
@@ -229,7 +229,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <TrendingDown className="h-8 w-8 text-red-400" />
             <div className="ml-4">
@@ -239,7 +239,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <DollarSign className={`h-8 w-8 ${profit >= 0 ? 'text-green-400' : 'text-red-400'}`} />
             <div className="ml-4">

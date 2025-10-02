@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Home, Sheet as Sheep, Heart, DollarSign, FileText, Users, Settings, LogOut, Plus, Search, Filter, Download } from 'lucide-react';
+import { Menu, X, Home, Sheet as Sheep, Heart, DollarSign, FileText, Users, Settings, LogOut, Plus, Search, Filter, Download, TrendingUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import SheepForm from './SheepForm';
 import SheepList from './SheepList';
@@ -8,6 +8,7 @@ import FinanceTracker from './FinanceTracker';
 import ExpenseTracker from './ExpenseTracker';
 import Reports from './Reports';
 import UserManagement from './UserManagement';
+import FinancialCharts from './FinancialCharts';
 
 interface DashboardProps {
   user: {
@@ -123,6 +124,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         { id: 'sheep', label: 'Sheep Management', icon: Sheep },
         { id: 'health', label: 'Health Monitor', icon: Heart },
         { id: 'finance', label: 'Finance', icon: DollarSign },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'reports', label: 'Reports', icon: FileText },
         { id: 'users', label: 'User Management', icon: Users }
       ];
@@ -140,10 +142,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const handleTabChange = (tabId: string) => {
     if (hasAccess(tabId)) {
       setActiveTab(tabId);
+      setSidebarOpen(false); // Auto-close mobile menu
     } else {
       // Redirect to default allowed tab with error message
       const defaultTab = getMenuItems()[0]?.id || 'sheep';
       setActiveTab(defaultTab);
+      setSidebarOpen(false); // Auto-close mobile menu
       alert('Access denied: You do not have permission to view this section.');
     }
   };
@@ -168,6 +172,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         return <HealthMonitor user={user} />;
       case 'finance':
         return user.role === 'admin' ? <FinanceTracker user={user} onUpdate={loadDashboardStats} /> : <AccessDenied />;
+      case 'analytics':
+        return user.role === 'admin' ? <FinancialCharts user={user} /> : <AccessDenied />;
       case 'expenses':
         return user.role === 'staff' ? <ExpenseTracker user={user} onUpdate={loadDashboardStats} /> : <AccessDenied />;
       case 'reports':
@@ -181,14 +187,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)}></div>
@@ -208,12 +214,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             onLogout={onLogout}
             getMenuItems={getMenuItems}
             handleTabChange={handleTabChange}
+            setSidebarOpen={setSidebarOpen}
           />
         </div>
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-10">
         <SidebarContent 
           user={user} 
           activeTab={activeTab} 
@@ -221,6 +228,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           onLogout={onLogout}
           getMenuItems={getMenuItems}
           handleTabChange={handleTabChange}
+          setSidebarOpen={setSidebarOpen}
         />
       </div>
 
@@ -236,7 +244,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         </div>
         <main className="flex-1">
           <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 content-glass p-6">
               {renderContent()}
             </div>
           </div>
@@ -261,20 +269,21 @@ const SidebarContent: React.FC<{
   onLogout: () => void;
   getMenuItems: () => any[];
   handleTabChange: (tabId: string) => void;
+  setSidebarOpen: (open: boolean) => void;
 }> = ({ user, activeTab, onLogout, getMenuItems, handleTabChange }) => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
-      <div className="flex items-center h-16 flex-shrink-0 px-4 bg-white border-b border-gray-200">
+    <div className="flex flex-col h-full sidebar-glass">
+      <div className="flex items-center h-16 flex-shrink-0 px-4 border-b border-green-200/30">
         <Sheep className="h-8 w-8 text-blue-500 mr-3" />
         <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">SheepTracker</span>
       </div>
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
         <div className="px-3 mb-6">
-          <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 border border-blue-100">
+          <div className="glass-card rounded-lg p-4">
             <p className="text-sm font-medium text-gray-900">{user.name}</p>
-            <p className="text-xs text-blue-600 capitalize font-medium">{user.role}</p>
+            <p className="text-xs text-green-700 capitalize font-medium">{user.role}</p>
           </div>
         </div>
         <nav className="flex-1 px-2 space-y-1">
@@ -284,8 +293,8 @@ const SidebarContent: React.FC<{
               onClick={() => handleTabChange(item.id)}
               className={`${
                 activeTab === item.id
-                  ? 'bg-gradient-to-r from-green-50 to-blue-50 border-blue-400 text-blue-700'
-                  : 'border-transparent text-gray-600 hover:bg-blue-50 hover:text-gray-900'
+                  ? 'liquid-glass border-green-400 text-green-800'
+                  : 'border-transparent text-gray-600 hover:liquid-glass hover:text-gray-900'
               } group flex items-center px-2 py-2 text-sm font-medium rounded-md border-l-4 w-full text-left transition-colors`}
             >
               <item.icon className="mr-3 h-5 w-5" />
@@ -296,7 +305,7 @@ const SidebarContent: React.FC<{
         <div className="px-2">
           <button
             onClick={onLogout}
-            className="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-red-50 hover:text-red-600 w-full text-left transition-colors"
+            className="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:liquid-glass hover:text-red-600 w-full text-left transition-colors"
           >
             <LogOut className="mr-3 h-5 w-5" />
             Sign out
@@ -323,7 +332,7 @@ const OverviewTab: React.FC<{ stats: DashboardStats; user: any }> = ({ stats, us
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="liquid-glass overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -339,7 +348,7 @@ const OverviewTab: React.FC<{ stats: DashboardStats; user: any }> = ({ stats, us
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="liquid-glass overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -355,7 +364,7 @@ const OverviewTab: React.FC<{ stats: DashboardStats; user: any }> = ({ stats, us
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="liquid-glass overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -371,7 +380,7 @@ const OverviewTab: React.FC<{ stats: DashboardStats; user: any }> = ({ stats, us
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="liquid-glass overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -389,7 +398,7 @@ const OverviewTab: React.FC<{ stats: DashboardStats; user: any }> = ({ stats, us
       </div>
 
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="liquid-glass shadow rounded-lg p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Financial Overview</h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -411,7 +420,7 @@ const OverviewTab: React.FC<{ stats: DashboardStats; user: any }> = ({ stats, us
           </div>
         </div>
 
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="liquid-glass shadow rounded-lg p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Health Alerts</h3>
           <div className="space-y-3">
             {stats.sickCount > 0 ? (
