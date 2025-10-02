@@ -183,15 +183,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </section>
 
       {/* Footer */}
-      <footer className="liquid-glass py-12 border-t border-green-200/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center text-gray-800">
-            <Sheep className="h-6 w-6 text-green-400 mr-2" />
-            <span className="text-gray-800 font-semibold">SheepTracker</span>
-            <span className="text-gray-600 ml-4">© 2025 Smart Sheep Management System</span>
-          </div>
-        </div>
-      </footer>
+      <footer className="py-12 bg-blue-900 border-t border-blue-800">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center text-white">
+      <Sheep className="h-6 w-6 text-green-400 mr-2" />
+      <span className="font-semibold">SheepTracker</span>
+      <span className="text-gray-300 ml-4">© 2025 Smart Sheep Management System</span>
+    </div>
+  </div>
+</footer>
     </div>
   );
 };
