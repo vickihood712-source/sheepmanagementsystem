@@ -166,7 +166,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
             Ready to Transform Your Sheep Farm?
           </h2>
           <p className="text-xl text-green-100 mb-8">
-            Join thousands of farmers who trust SheepTracker for their flock management
+            Join thousands of farmers who trust SheepMS for their flock management
           </p>
           <button
             onClick={() => onShowAuth('register')}
