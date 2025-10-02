@@ -129,7 +129,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </p>
     </div>
     
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Admin */}
       <div className="text-center">
         <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
           <Shield className="h-8 w-8 text-blue-500" />
@@ -138,9 +139,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
         <p className="text-gray-700">Full system control and user management</p>
       </div>
 
-      <div className="text-center">
-        <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Sheep className="h-8 w-8 text-green-400" />
+      {/* Veterinarian */}
       <div className="text-center">
         <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
           <Heart className="h-8 w-8 text-blue-500" />
@@ -149,6 +148,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
         <p className="text-gray-700">Health monitoring and medical records</p>
       </div>
 
+      {/* Staff */}
       <div className="text-center">
         <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
           <Users className="h-8 w-8 text-blue-500" />
