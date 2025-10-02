@@ -21,47 +21,49 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       // Load sheep data
       const { data: sheepData } = await supabase.from('sheep').select('*');
       
-      // Load financial data from sales_records and expenses
-      const { data: salesData } = await supabase.from('sales_records').select('*');
-      const { data: expensesData } = await supabase.from('expenses').select('*');
+      // Load financial data from sales_records and expenses with proper date filtering
+      let salesQuery = supabase.from('sales_records').select('*');
+      let expensesQuery = supabase.from('expenses').select('*');
       
-      // Load alerts
-      const { data: alertsData } = await supabase.from('alerts').select('*');
-
-      // Process data based on date range
+      // Apply date filtering
       const now = new Date();
       let startDate = new Date();
+      let endDate = new Date();
       
       switch (dateRange) {
         case 'current_month':
           startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
           break;
         case 'last_month':
           startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          endDate = new Date(now.getFullYear(), now.getMonth(), 0);
           break;
         case 'current_year':
           startDate = new Date(now.getFullYear(), 0, 1);
+          endDate = new Date(now.getFullYear(), 11, 31);
           break;
         case 'last_year':
           startDate = new Date(now.getFullYear() - 1, 0, 1);
+          endDate = new Date(now.getFullYear() - 1, 11, 31);
           break;
       }
-
-      // Combine financial data
-      const salesRecords = (salesData || []).map(record => ({ ...record, type: 'revenue' }));
-      const expenseRecords = (expensesData || []).map(record => ({ ...record, type: 'expense' }));
-      const allFinanceData = [...salesRecords, ...expenseRecords];
       
-      const filteredFinance = allFinanceData.filter(record => 
-        new Date(record.date) >= startDate && 
-        (dateRange !== 'last_month' && dateRange !== 'last_year' ? new Date(record.date) <= now : 
-         dateRange === 'last_month' ? new Date(record.date) < new Date(now.getFullYear(), now.getMonth(), 1) :
-         new Date(record.date) < new Date(now.getFullYear(), 0, 1))
-      );
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+      
+      salesQuery = salesQuery.gte('date', startDateStr).lte('date', endDateStr);
+      expensesQuery = expensesQuery.gte('date', startDateStr).lte('date', endDateStr);
+      
+      const { data: salesData } = await salesQuery;
+      const { data: expensesData } = await expensesQuery;
+      
+      // Load alerts
+      const { data: alertsData } = await supabase.from('alerts').select('*');
 
-      const filteredAlerts = alertsData?.filter(alert =>
-        new Date(alert.created_at) >= startDate
-      ) || [];
+      // Process financial data
+      const salesRecords = salesData || [];
+      const expenseRecords = expensesData || [];
 
       // Calculate statistics
       const totalSheep = sheepData?.length || 0;
@@ -69,8 +71,8 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       const sickCount = sheepData?.filter(sheep => sheep.health_status === 'sick').length || 0;
       const pregnantCount = sheepData?.filter(sheep => sheep.health_status === 'pregnant').length || 0;
       
-      const totalRevenue = filteredFinance.filter(r => r.type === 'revenue').reduce((sum, r) => sum + r.amount, 0);
-      const totalExpenses = filteredFinance.filter(r => r.type === 'expense').reduce((sum, r) => sum + r.amount, 0);
+      const totalRevenue = salesRecords.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+      const totalExpenses = expenseRecords.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
       const netProfit = totalRevenue - totalExpenses;
       
       const breedBreakdown = sheepData?.reduce((acc: any, sheep) => {
@@ -112,17 +114,19 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
           expenses: totalExpenses,
           profit: netProfit,
           profitMargin: totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : 0,
-          revenueByCategory: filteredFinance.filter(r => r.type === 'revenue').reduce((acc: any, r) => {
-            acc[r.category || 'Other'] = (acc[r.category || 'Other'] || 0) + r.amount;
+          revenueByCategory: salesRecords.reduce((acc: any, r) => {
+            const category = r.transaction_type || 'Sales';
+            acc[category] = (acc[category] || 0) + (parseFloat(r.amount) || 0);
             return acc;
           }, {}),
-          expensesByCategory: filteredFinance.filter(r => r.type === 'expense').reduce((acc: any, r) => {
-            acc[r.category || 'Other'] = (acc[r.category || 'Other'] || 0) + r.amount;
+          expensesByCategory: expenseRecords.reduce((acc: any, r) => {
+            const category = r.category || 'Other';
+            acc[category] = (acc[category] || 0) + (parseFloat(r.amount) || 0);
             return acc;
           }, {})
         },
         health: {
-          totalAlerts: filteredAlerts.length,
+          totalAlerts: (alertsData || []).length,
           healthScore: totalSheep > 0 ? ((healthyCount / totalSheep) * 100).toFixed(1) : 100,
           vaccinationCompliance: sheepData?.filter(s => s.vaccination_status === 'up_to_date').length || 0
         }
@@ -169,7 +173,27 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
         case 'financial':
           const { data: salesData } = await supabase.from('sales_records').select('*');
           const { data: expensesData } = await supabase.from('expenses').select('*');
-          data = [...(salesData || []), ...(expensesData || [])];
+          
+          // Combine and format financial data for CSV
+          const salesFormatted = (salesData || []).map(record => ({
+            date: record.date,
+            type: 'Revenue',
+            category: record.transaction_type || 'Sale',
+            description: record.buyer_seller || 'Sale transaction',
+            amount: record.amount,
+            created_at: record.created_at
+          }));
+          
+          const expensesFormatted = (expensesData || []).map(record => ({
+            date: record.date,
+            type: 'Expense',
+            category: record.category,
+            description: record.description,
+            amount: record.amount,
+            created_at: record.created_at
+          }));
+          
+          data = [...salesFormatted, ...expensesFormatted];
           filename = `financial_report_${dateRange}.csv`;
           break;
         case 'health':
@@ -373,26 +397,35 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       {selectedReport === 'financial' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="liquid-glass p-6 rounded-lg shadow">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Total Revenue</h3>
               <p className="text-3xl font-bold text-green-600">{formatCurrency(reportData.financial?.revenue || 0)}</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {Object.keys(reportData.financial?.revenueByCategory || {}).length} revenue streams
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="liquid-glass p-6 rounded-lg shadow">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Total Expenses</h3>
               <p className="text-3xl font-bold text-red-600">{formatCurrency(reportData.financial?.expenses || 0)}</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {Object.keys(reportData.financial?.expensesByCategory || {}).length} expense categories
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="liquid-glass p-6 rounded-lg shadow">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Profit Margin</h3>
               <p className={`text-3xl font-bold ${
                 parseFloat(reportData.financial?.profitMargin || '0') >= 0 ? 'text-green-600' : 'text-red-600'
               }`}>
                 {reportData.financial?.profitMargin || 0}%
               </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Net: {formatCurrency(reportData.financial?.profit || 0)}
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="liquid-glass p-6 rounded-lg shadow">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium text-gray-900">Revenue by Category</h3>
                 <button
@@ -411,9 +444,12 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                   </div>
                 ))}
               </div>
+              {Object.keys(reportData.financial?.revenueByCategory || {}).length === 0 && (
+                <p className="text-sm text-gray-500">No revenue recorded for this period</p>
+              )}
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="liquid-glass p-6 rounded-lg shadow">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Expenses by Category</h3>
               <div className="space-y-3">
                 {Object.entries(reportData.financial?.expensesByCategory || {}).map(([category, amount]) => (
@@ -423,6 +459,79 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                   </div>
                 ))}
               </div>
+              {Object.keys(reportData.financial?.expensesByCategory || {}).length === 0 && (
+                <p className="text-sm text-gray-500">No expenses recorded for this period</p>
+              )}
+            </div>
+          </div>
+          
+          {/* Financial Summary Table */}
+          <div className="liquid-glass p-6 rounded-lg shadow">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Financial Summary</h3>
+              <button
+                onClick={() => downloadReport('financial')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Financial Report
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Metric
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Amount
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Percentage
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      Total Revenue
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
+                      {formatCurrency(reportData.financial?.revenue || 0)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      100%
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      Total Expenses
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">
+                      {formatCurrency(reportData.financial?.expenses || 0)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {reportData.financial?.revenue > 0 
+                        ? ((reportData.financial.expenses / reportData.financial.revenue) * 100).toFixed(1)
+                        : 0}%
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      Net Profit
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${
+                      (reportData.financial?.profit || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {formatCurrency(reportData.financial?.profit || 0)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {reportData.financial?.profitMargin || 0}%
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
