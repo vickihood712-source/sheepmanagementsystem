@@ -118,7 +118,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </section>
 
       {/* Role-based Access Section */}
-<section className="py-20 bg-blue-500">
+<section className="py-20 bg-blue-100">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="text-center mb-16">
       <h2 className="text-3xl font-bold text-black mb-4">
@@ -130,7 +130,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
     </div>
     
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <div className="text-center">
+      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Shield className="h-8 w-8 text-blue-900" />
         </div>
@@ -138,7 +138,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
         <p className="text-black">Full system control and user management</p>
       </div>
 
-      <div className="text-center">
+      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Sheep className="h-8 w-8 text-green-600" />
         </div>
@@ -146,7 +146,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
         <p className="text-black">Complete flock management and insights</p>
       </div>
 
-      <div className="text-center">
+      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Heart className="h-8 w-8 text-blue-900" />
         </div>
@@ -154,7 +154,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
         <p className="text-black">Health monitoring and medical records</p>
       </div>
 
-      <div className="text-center">
+      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Users className="h-8 w-8 text-blue-900" />
         </div>
