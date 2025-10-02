@@ -182,7 +182,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="flex items-center justify-center text-white">
       <Sheep className="h-6 w-6 text-green-400 mr-2" />
-      <span className="font-semibold">SheepTracker</span>
+      <span className="font-semibold">SheepMS</span>
       <span className="text-gray-300 ml-4">© 2025 Smart Sheep Management System</span>
     </div>
   </div>
