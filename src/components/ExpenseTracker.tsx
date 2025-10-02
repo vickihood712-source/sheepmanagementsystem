@@ -173,7 +173,7 @@ const ExpenseTracker: React.FC<ExpenseTrackerProps> = ({ user, onUpdate }) => {
 
       {/* Expense Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="liquid-glass p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <DollarSign className="h-8 w-8 text-red-400" />
             <div className="ml-4">
@@ -183,7 +183,7 @@ const ExpenseTracker: React.FC<ExpenseTrackerProps> = ({ user, onUpdate }) => {
           </div>
         </div>
 
-        <div className="liquid-glass p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Expenses by Category</h3>
           <div className="space-y-3">
             {categoryBreakdown.map(([category, amount]) => (

@@ -269,7 +269,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       {/* Report Content */}
       {selectedReport === 'overview' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="liquid-glass p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Sheep</p>
@@ -279,7 +279,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
             </div>
           </div>
 
-          <div className="liquid-glass p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Health Score</p>
@@ -289,7 +289,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
             </div>
           </div>
 
-          <div className="liquid-glass p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Net Profit</p>

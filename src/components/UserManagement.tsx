@@ -36,38 +36,16 @@ const UserManagement: React.FC = () => {
 
   const loadUsers = async () => {
     try {
-      // First check if current user is admin
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Not authenticated');
-      }
-
-      const { data: currentUserData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (!currentUserData || currentUserData.role !== 'admin') {
-        throw new Error('Access denied: Admin privileges required');
-      }
-
-      // Query users table - admins should see all users
+      // Query users table directly (no admin API access needed)
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('Error loading users:', error);
-        throw error;
-      }
-      
+      if (error) throw error;
       setUsers(data || []);
     } catch (error) {
       console.error('Error loading users:', error);
-      alert(`Error loading users: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -194,7 +172,7 @@ const UserManagement: React.FC = () => {
 
       {/* User Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="liquid-glass p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center">
             <Shield className="h-6 w-6 text-red-400" />
             <div className="ml-3">
@@ -204,7 +182,7 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
         
-        <div className="liquid-glass p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center">
             <Users className="h-6 w-6 text-green-400" />
             <div className="ml-3">
@@ -214,7 +192,7 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
-        <div className="liquid-glass p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center">
             <Users className="h-6 w-6 text-blue-400" />
             <div className="ml-3">
@@ -224,7 +202,7 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
-        <div className="liquid-glass p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow">
           <div className="flex items-center">
             <Users className="h-6 w-6 text-gray-400" />
             <div className="ml-3">
@@ -236,7 +214,7 @@ const UserManagement: React.FC = () => {
       </div>
 
       {/* Search and Filter */}
-      <div className="liquid-glass p-6 rounded-lg shadow mb-6">
+      <div className="bg-white p-6 rounded-lg shadow mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -264,7 +242,7 @@ const UserManagement: React.FC = () => {
       </div>
 
       {/* User Table */}
-      <div className="liquid-glass shadow rounded-lg overflow-hidden">
+      <div className="bg-white shadow rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

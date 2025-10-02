@@ -126,7 +126,7 @@ const SheepList: React.FC<SheepListProps> = ({ user, onEdit }) => {
   }
 
   return (
-    <div className="liquid-glass shadow-sm rounded-lg">
+    <div className="bg-white shadow-sm rounded-lg">
       {/* Search and Filter Bar */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
