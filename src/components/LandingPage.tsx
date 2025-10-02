@@ -7,7 +7,7 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
       <header className="liquid-glass shadow-sm border-b border-green-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
