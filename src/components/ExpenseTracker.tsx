@@ -29,7 +29,7 @@ const ExpenseTracker: React.FC<ExpenseTrackerProps> = ({ user, onUpdate }) => {
   const [dateRange, setDateRange] = useState('current_month');
   
   const expenseCategories = [
-    'feed', 'medical', 'equipment', 'maintenance', 'labour', 'other'
+    'feed', 'medical', 'equipment', 'maintenance', 'other'
   ];
 
   useEffect(() => {
