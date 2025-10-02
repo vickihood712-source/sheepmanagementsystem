@@ -141,11 +141,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       <div className="text-center">
         <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
           <Sheep className="h-8 w-8 text-green-400" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Farmer</h3>
-        <p className="text-gray-700">Complete flock management and insights</p>
-      </div>
-
       <div className="text-center">
         <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
           <Heart className="h-8 w-8 text-blue-500" />
