@@ -221,6 +221,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-10">
+        <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-green-100 via-green-200 to-green-100"></div>
         <SidebarContent 
           user={user} 
           activeTab={activeTab} 
@@ -234,6 +235,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
       {/* Main content */}
       <div className="md:pl-64 flex flex-col flex-1">
+        <div className="hidden md:block absolute left-64 top-0 bottom-0 w-px bg-gradient-to-b from-green-100 via-green-200 to-green-100 z-20"></div>
         <div className="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-50">
           <button
             onClick={() => setSidebarOpen(true)}

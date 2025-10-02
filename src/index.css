@@ -2,27 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Lattice Facade Pattern Background */
 body {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 25%, #bbf7d0 50%, #86efac 75%, #4ade80 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ff 10%, #f8fafc 100%);
   min-height: 100vh;
+  position: relative;
 }
 
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Lattice Facade Pattern Overlay */
+/* Subtle Patterned Wallpaper Background */
 body::before {
   content: '';
   position: fixed;
@@ -31,40 +17,40 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: 
-    /* Lattice Grid Pattern */
-    linear-gradient(0deg, rgba(34, 197, 94, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 197, 94, 0.15) 1px, transparent 1px),
-    /* Diagonal Lattice */
-    linear-gradient(45deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-    linear-gradient(-45deg, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-    /* Facade Depth Pattern */
+    /* Organic wave pattern */
     repeating-linear-gradient(
-      0deg,
-      rgba(34, 197, 94, 0.12) 0px,
-      rgba(34, 197, 94, 0.12) 2px,
+      45deg,
+      rgba(34, 197, 94, 0.03) 0px,
+      rgba(34, 197, 94, 0.03) 1px,
       transparent 2px,
-      transparent 20px
+      transparent 12px
     ),
+    /* Subtle dots pattern */
+    radial-gradient(circle at 20px 20px, rgba(34, 197, 94, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 60px 60px, rgba(59, 130, 246, 0.02) 1px, transparent 1px),
+    /* Farm-inspired geometric shapes */
     repeating-linear-gradient(
       90deg,
-      rgba(16, 185, 129, 0.1) 0px,
-      rgba(16, 185, 129, 0.1) 2px,
+      rgba(34, 197, 94, 0.02) 0px,
+      rgba(34, 197, 94, 0.02) 1px,
       transparent 2px,
-      transparent 20px
+      transparent 24px
     ),
-    /* Lattice Intersections */
-    radial-gradient(circle at 20px 20px, rgba(34, 197, 94, 0.2) 1px, transparent 1px);
+    /* Organic wave overlay */
+    repeating-linear-gradient(
+      135deg,
+      rgba(248, 250, 252, 0.5) 0px,
+      rgba(248, 250, 252, 0.5) 1px,
+      transparent 1px,
+      transparent 40px
+    );
   background-size: 
+    12px 12px,
     20px 20px,
-    20px 20px,
-    40px 40px,
-    40px 40px,
-    20px 20px,
-    20px 20px,
-    20px 20px;
+    60px 60px,
+    24px 24px,
+    40px 40px;
   background-position: 
-    0 0,
-    0 0,
     0 0,
     0 0,
     0 0,
@@ -72,18 +58,18 @@ body::before {
     0 0;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.8;
-  animation: latticeShimmer 25s ease-in-out infinite;
+  opacity: 0.6;
+  animation: subtleShimmer 30s ease-in-out infinite;
 }
 
-@keyframes latticeShimmer {
+@keyframes subtleShimmer {
   0%, 100% {
     transform: translateX(0px) translateY(0px);
-    opacity: 0.8;
+    opacity: 0.6;
   }
   50% {
-    transform: translateX(2px) translateY(-2px);
-    opacity: 0.9;
+    transform: translateX(1px) translateY(-1px);
+    opacity: 0.7;
   }
 }
 
@@ -123,9 +109,9 @@ body::before {
 .sidebar-glass {
   background: rgba(255, 255, 255, 0.15) !important;
   backdrop-filter: blur(30px) saturate(200%);
-  border-right: 1px solid rgba(34, 197, 94, 0.3);
+  border-right: 2px solid rgba(34, 197, 94, 0.2);
   box-shadow: 
-    4px 0 20px rgba(0, 0, 0, 0.1),
+    2px 0 15px rgba(0, 0, 0, 0.08),
     inset -1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
