@@ -118,53 +118,52 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </section>
 
       {/* Role-based Access Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Built for Every Team Member
-            </h2>
-            <p className="text-lg text-gray-600">
-              Role-based dashboards tailored to your specific needs
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-8 w-8 text-blue-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Admin</h3>
-              <p className="text-gray-600">Full system control and user management</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sheep className="h-8 w-8 text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Farmer</h3>
-              <p className="text-gray-600">Complete flock management and insights</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-8 w-8 text-blue-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Veterinarian</h3>
-              <p className="text-gray-600">Health monitoring and medical records</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-blue-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Staff</h3>
-              <p className="text-gray-600">Daily task management and record keeping</p>
-            </div>
-          </div>
+<section className="py-20 bg-transparent">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-16 glass-panel p-6 rounded-xl">
+      <h2 className="text-3xl font-bold text-gray-800 mb-4">
+        Built for Every Team Member
+      </h2>
+      <p className="text-lg text-gray-600">
+        Role-based dashboards tailored to your specific needs
+      </p>
+    </div>
+    
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="glass-panel text-center p-6 rounded-xl">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Shield className="h-8 w-8 text-blue-500" />
         </div>
-      </section>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Admin</h3>
+        <p className="text-gray-600">Full system control and user management</p>
+      </div>
 
+      <div className="glass-panel text-center p-6 rounded-xl">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Sheep className="h-8 w-8 text-green-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Farmer</h3>
+        <p className="text-gray-600">Complete flock management and insights</p>
+      </div>
+
+      <div className="glass-panel text-center p-6 rounded-xl">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Heart className="h-8 w-8 text-blue-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Veterinarian</h3>
+        <p className="text-gray-600">Health monitoring and medical records</p>
+      </div>
+
+      <div className="glass-panel text-center p-6 rounded-xl">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Users className="h-8 w-8 text-blue-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Staff</h3>
+        <p className="text-gray-600">Daily task management and record keeping</p>
+      </div>
+    </div>
+  </div>
+</section>
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-green-400 to-blue-500">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
