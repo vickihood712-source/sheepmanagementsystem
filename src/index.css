@@ -3,14 +3,13 @@
 @tailwind utilities;
 
 body {
-  /* Separate sections of color */
+  /* Two solid color sections only */
   background: linear-gradient(
     to bottom,
-    #bbf7d0 0%,   /* Light Green (top 70%) */
-    #bbf7d0 70%,
-    #dbeafe 70%,  /* Light Blue (bottom 20%) */
-    #dbeafe 90%,
-    #f8fafc 90%   /* Neutral white/gray (last 10%) */
+    #bbf7d0 0%,   /* Light Green start */
+    #bbf7d0 70%,  /* Light Green end at 70% */
+    #dbeafe 70%,  /* Blue start at 70% */
+    #dbeafe 100%  /* Blue fills to bottom */
   );
   min-height: 100vh;
   position: relative;
@@ -63,7 +62,6 @@ body::before {
     opacity: 0.7;
   }
 }
-
 /* Liquid Glass Effect */
 .liquid-glass {
   background: rgba(255, 255, 255, 0.08) !important;
