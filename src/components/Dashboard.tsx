@@ -279,7 +279,7 @@ const SidebarContent: React.FC<{
     <div className="flex flex-col h-full sidebar-glass">
       <div className="flex items-center h-16 flex-shrink-0 px-4 border-b border-green-200/30">
         <Sheep className="h-8 w-8 text-blue-500 mr-3" />
-        <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">SheepTracker</span>
+        <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">SheepMS</span>
       </div>
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
         <div className="px-3 mb-6">
