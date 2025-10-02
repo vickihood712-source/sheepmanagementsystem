@@ -118,48 +118,48 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
       </section>
 
       {/* Role-based Access Section */}
-<section className="py-20 bg-blue-100">
+<section className="py-20 bg-blue-200">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="text-center mb-16">
-      <h2 className="text-3xl font-bold text-black mb-4">
+      <h2 className="text-3xl font-bold text-gray-800 mb-4">
         Built for Every Team Member
       </h2>
-      <p className="text-lg text-black">
+      <p className="text-lg text-gray-700">
         Role-based dashboards tailored to your specific needs
       </p>
     </div>
     
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Shield className="h-8 w-8 text-blue-900" />
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Shield className="h-8 w-8 text-blue-500" />
         </div>
-        <h3 className="text-lg font-semibold text-black mb-2">Admin</h3>
-        <p className="text-black">Full system control and user management</p>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Admin</h3>
+        <p className="text-gray-700">Full system control and user management</p>
       </div>
 
-      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Sheep className="h-8 w-8 text-green-600" />
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Sheep className="h-8 w-8 text-green-400" />
         </div>
-        <h3 className="text-lg font-semibold text-black mb-2">Farmer</h3>
-        <p className="text-black">Complete flock management and insights</p>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Farmer</h3>
+        <p className="text-gray-700">Complete flock management and insights</p>
       </div>
 
-      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Heart className="h-8 w-8 text-blue-900" />
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Heart className="h-8 w-8 text-blue-500" />
         </div>
-        <h3 className="text-lg font-semibold text-black mb-2">Veterinarian</h3>
-        <p className="text-black">Health monitoring and medical records</p>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Veterinarian</h3>
+        <p className="text-gray-700">Health monitoring and medical records</p>
       </div>
 
-      <div className="text-center bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md hover:shadow-lg transition">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Users className="h-8 w-8 text-blue-900" />
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Users className="h-8 w-8 text-blue-500" />
         </div>
-        <h3 className="text-lg font-semibold text-black mb-2">Staff</h3>
-        <p className="text-black">Daily task management and record keeping</p>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Staff</h3>
+        <p className="text-gray-700">Daily task management and record keeping</p>
       </div>
     </div>
   </div>
