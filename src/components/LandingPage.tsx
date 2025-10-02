@@ -14,7 +14,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onShowAuth }) => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Sheep className="h-8 w-8 text-blue-500 mr-3" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">SheepTracker</span>
+              <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">SheepMS</span>
             </div>
             <div className="flex space-x-4">
               <button
