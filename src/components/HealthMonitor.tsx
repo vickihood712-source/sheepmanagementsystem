@@ -224,7 +224,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
 
       {/* Health Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <Heart className="h-8 w-8 text-green-400" />
             <div className="ml-4">
@@ -234,7 +234,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <AlertTriangle className="h-8 w-8 text-red-400" />
             <div className="ml-4">
@@ -244,7 +244,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-blue-400" />
             <div className="ml-4">
@@ -254,7 +254,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="liquid-glass p-6 rounded-lg shadow">
           <div className="flex items-center">
             <Calendar className="h-8 w-8 text-purple-400" />
             <div className="ml-4">
@@ -305,7 +305,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
 
       {/* Tab Content */}
       {activeTab === 'overview' && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="liquid-glass rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
