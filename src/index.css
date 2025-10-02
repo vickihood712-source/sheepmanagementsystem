@@ -3,12 +3,20 @@
 @tailwind utilities;
 
 body {
-  background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ff 10%, #f8fafc 100%);
+  /* Separate sections of color */
+  background: linear-gradient(
+    to bottom,
+    #bbf7d0 0%,   /* Light Green (top 70%) */
+    #bbf7d0 70%,
+    #dbeafe 70%,  /* Light Blue (bottom 20%) */
+    #dbeafe 90%,
+    #f8fafc 90%   /* Neutral white/gray (last 10%) */
+  );
   min-height: 100vh;
   position: relative;
 }
 
-/* Subtle Patterned Wallpaper Background */
+/* Patterned Wallpaper Background */
 body::before {
   content: '';
   position: fixed;
@@ -16,59 +24,42 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    /* Organic wave pattern */
+  background-image:
+    /* Green diagonal lines */
     repeating-linear-gradient(
       45deg,
-      rgba(34, 197, 94, 0.03) 0px,
-      rgba(34, 197, 94, 0.03) 1px,
+      rgba(34, 197, 94, 0.06) 0px,
+      rgba(34, 197, 94, 0.06) 2px,
       transparent 2px,
-      transparent 12px
+      transparent 20px
     ),
-    /* Subtle dots pattern */
-    radial-gradient(circle at 20px 20px, rgba(34, 197, 94, 0.04) 1px, transparent 1px),
-    radial-gradient(circle at 60px 60px, rgba(59, 130, 246, 0.02) 1px, transparent 1px),
-    /* Farm-inspired geometric shapes */
+    /* Blue dots */
+    radial-gradient(circle at 20px 20px, rgba(59, 130, 246, 0.05) 2px, transparent 2px),
+    /* Light overlay grid */
     repeating-linear-gradient(
       90deg,
-      rgba(34, 197, 94, 0.02) 0px,
-      rgba(34, 197, 94, 0.02) 1px,
-      transparent 2px,
-      transparent 24px
-    ),
-    /* Organic wave overlay */
-    repeating-linear-gradient(
-      135deg,
-      rgba(248, 250, 252, 0.5) 0px,
-      rgba(248, 250, 252, 0.5) 1px,
+      rgba(0, 0, 0, 0.02) 0px,
+      rgba(0, 0, 0, 0.02) 1px,
       transparent 1px,
-      transparent 40px
+      transparent 24px
     );
-  background-size: 
-    12px 12px,
+  background-size:
     20px 20px,
     60px 60px,
-    24px 24px,
-    40px 40px;
-  background-position: 
-    0 0,
-    0 0,
-    0 0,
-    0 0,
-    0 0;
+    24px 24px;
   pointer-events: none;
   z-index: -1;
   opacity: 0.6;
-  animation: subtleShimmer 30s ease-in-out infinite;
+  animation: subtleFloat 40s ease-in-out infinite;
 }
 
-@keyframes subtleShimmer {
+@keyframes subtleFloat {
   0%, 100% {
     transform: translateX(0px) translateY(0px);
     opacity: 0.6;
   }
   50% {
-    transform: translateX(1px) translateY(-1px);
+    transform: translateX(3px) translateY(-3px);
     opacity: 0.7;
   }
 }
