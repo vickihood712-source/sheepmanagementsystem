@@ -16,7 +16,8 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ user }) => {
     categoryBreakdown: [],
     profitAnalysis: [],
     cashFlow: [],
-    yearlyComparison: []
+    yearlyComparison: [],
+    debtCreditData: []
   });
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('12months');
@@ -43,8 +44,14 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ user }) => {
         .from('sheep')
         .select('estimated_value, created_at, status');
 
+      // Load debt and credit data
+      const { data: debtCreditData } = await supabase
+        .from('debts_credits')
+        .select('*')
+        .order('created_at', { ascending: true });
+
       // Process data for charts
-      const processedData = processFinancialData(salesData || [], expensesData || [], sheepData || []);
+      const processedData = processFinancialData(salesData || [], expensesData || [], sheepData || [], debtCreditData || []);
       setChartData(processedData);
     } catch (error) {
       console.error('Error loading chart data:', error);
@@ -53,7 +60,7 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ user }) => {
     }
   };
 
-  const processFinancialData = (sales: any[], expenses: any[], sheep: any[]) => {
+  const processFinancialData = (sales: any[], expenses: any[], sheep: any[], debtCredit: any[]) => {
     // Monthly trends data
     const monthlyData = generateMonthlyTrends(sales, expenses);
     
@@ -69,12 +76,16 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ user }) => {
     // Yearly comparison
     const yearlyData = generateYearlyComparison(sales, expenses);
 
+    // Debt and credit analysis
+    const debtCreditAnalysis = generateDebtCreditAnalysis(debtCredit);
+
     return {
       monthlyTrends: monthlyData,
       categoryBreakdown: categoryData,
       profitAnalysis: profitData,
       cashFlow: cashFlowData,
-      yearlyComparison: yearlyData
+      yearlyComparison: yearlyData,
+      debtCreditData: debtCreditAnalysis
     };
   };
 
@@ -198,6 +209,61 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ user }) => {
         profit: yearSales - yearExpenses
       };
     });
+  };
+
+  const generateDebtCreditAnalysis = (debtCredit: any[]) => {
+    const currentDebts = debtCredit.filter(dc => dc.type === 'debt' && dc.status !== 'paid');
+    const currentCredits = debtCredit.filter(dc => dc.type === 'credit' && dc.status !== 'paid');
+    
+    const debtsByStatus = {
+      pending: currentDebts.filter(d => d.status === 'pending').reduce((sum, d) => sum + (d.amount - d.paid_amount), 0),
+      partial: currentDebts.filter(d => d.status === 'partial').reduce((sum, d) => sum + (d.amount - d.paid_amount), 0)
+    };
+    
+    const creditsByStatus = {
+      pending: currentCredits.filter(c => c.status === 'pending').reduce((sum, c) => sum + (c.amount - c.paid_amount), 0),
+      partial: currentCredits.filter(c => c.status === 'partial').reduce((sum, c) => sum + (c.amount - c.paid_amount), 0)
+    };
+    
+    // Monthly debt/credit trends
+    const monthlyDebtCredit = [];
+    const now = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = date.toISOString().slice(0, 7);
+      const monthName = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      
+      const monthDebts = debtCredit
+        .filter(dc => dc.type === 'debt' && dc.created_at.startsWith(monthKey))
+        .reduce((sum, dc) => sum + dc.amount, 0);
+      
+      const monthCredits = debtCredit
+        .filter(dc => dc.type === 'credit' && dc.created_at.startsWith(monthKey))
+        .reduce((sum, dc) => sum + dc.amount, 0);
+      
+      monthlyDebtCredit.push({
+        month: monthName,
+        debts: monthDebts,
+        credits: monthCredits,
+        net: monthCredits - monthDebts
+      });
+    }
+    
+    return {
+      statusBreakdown: [
+        { name: 'Pending Debts', value: debtsByStatus.pending, type: 'debt' },
+        { name: 'Partial Debts', value: debtsByStatus.partial, type: 'debt' },
+        { name: 'Pending Credits', value: creditsByStatus.pending, type: 'credit' },
+        { name: 'Partial Credits', value: creditsByStatus.partial, type: 'credit' }
+      ].filter(item => item.value > 0),
+      monthlyTrends: monthlyDebtCredit,
+      summary: {
+        totalDebt: debtsByStatus.pending + debtsByStatus.partial,
+        totalCredit: creditsByStatus.pending + creditsByStatus.partial,
+        netPosition: (creditsByStatus.pending + creditsByStatus.partial) - (debtsByStatus.pending + debtsByStatus.partial)
+      }
+    };
   };
 
   const COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
@@ -472,6 +538,109 @@ const FinancialCharts: React.FC<FinancialChartsProps> = ({ user }) => {
             <Bar dataKey="profit" fill="#3B82F6" name="Profit" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Debt & Credit Analysis */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Debt/Credit Status Breakdown */}
+        <div className="liquid-glass p-6 rounded-xl shadow-lg border border-gray-100">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Debt & Credit Status</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={chartData.debtCreditData.statusBreakdown}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {chartData.debtCreditData.statusBreakdown.map((entry: any, index: number) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.type === 'debt' ? '#EF4444' : '#10B981'} 
+                  />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value: number) => [formatCurrency(value), 'Amount']} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Monthly Debt/Credit Trends */}
+        <div className="liquid-glass p-6 rounded-xl shadow-lg border border-gray-100">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Debt & Credit Trends</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData.debtCreditData.monthlyTrends}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="month" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" tickFormatter={(value) => `Ksh ${(value / 1000).toFixed(0)}K`} />
+              <Tooltip 
+                formatter={(value: number) => [formatCurrency(value), '']}
+                contentStyle={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+              />
+              <Legend />
+              <Bar dataKey="debts" fill="#EF4444" name="New Debts" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="credits" fill="#10B981" name="New Credits" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Debt/Credit Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="liquid-glass p-6 rounded-xl border border-red-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-600 text-sm font-medium">Outstanding Debts</p>
+              <p className="text-2xl font-bold text-red-700">
+                {formatCurrency(chartData.debtCreditData.summary?.totalDebt || 0)}
+              </p>
+              <p className="text-sm text-red-600 mt-1">Money you owe</p>
+            </div>
+            <AlertTriangle className="h-12 w-12 text-red-400" />
+          </div>
+        </div>
+
+        <div className="liquid-glass p-6 rounded-xl border border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-600 text-sm font-medium">Outstanding Credits</p>
+              <p className="text-2xl font-bold text-green-700">
+                {formatCurrency(chartData.debtCreditData.summary?.totalCredit || 0)}
+              </p>
+              <p className="text-sm text-green-600 mt-1">Money owed to you</p>
+            </div>
+            <TrendingUp className="h-12 w-12 text-green-400" />
+          </div>
+        </div>
+
+        <div className={`liquid-glass p-6 rounded-xl border ${
+          (chartData.debtCreditData.summary?.netPosition || 0) >= 0 ? 'border-green-200' : 'border-red-200'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className={`${
+                (chartData.debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+              } text-sm font-medium`}>Net Position</p>
+              <p className={`text-2xl font-bold ${
+                (chartData.debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-700' : 'text-red-700'
+              }`}>
+                {formatCurrency(chartData.debtCreditData.summary?.netPosition || 0)}
+              </p>
+              <p className={`text-sm mt-1 ${
+                (chartData.debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {(chartData.debtCreditData.summary?.netPosition || 0) >= 0 ? 'Positive position' : 'Negative position'}
+              </p>
+            </div>
+            <DollarSign className={`h-12 w-12 ${
+              (chartData.debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+            }`} />
+          </div>
+        </div>
       </div>
     </div>
   );

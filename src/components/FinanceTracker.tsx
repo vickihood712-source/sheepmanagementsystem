@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Plus, Calendar, Download } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Plus, Calendar, Download, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 interface FinanceTrackerProps {
   user: any;
@@ -21,6 +22,11 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [debtCreditData, setDebtCreditData] = useState<any>({
+    summary: { totalDebt: 0, totalCredit: 0, netPosition: 0 },
+    statusBreakdown: [],
+    monthlyTrends: []
+  });
   const [formData, setFormData] = useState({
     type: 'expense' as 'revenue' | 'expense',
     category: '',
@@ -91,10 +97,71 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
       }
 
       setRecords(allRecords);
+      
+      // Load debt/credit data for visualization
+      await loadDebtCreditData();
     } catch (error) {
       console.error('Error loading financial records:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDebtCreditData = async () => {
+    try {
+      const { data: debtCreditRecords } = await supabase
+        .from('debts_credits')
+        .select('*')
+        .order('created_at', { ascending: true });
+      
+      if (debtCreditRecords) {
+        const currentDebts = debtCreditRecords.filter(dc => dc.type === 'debt' && dc.status !== 'paid');
+        const currentCredits = debtCreditRecords.filter(dc => dc.type === 'credit' && dc.status !== 'paid');
+        
+        const totalDebt = currentDebts.reduce((sum, d) => sum + (d.amount - d.paid_amount), 0);
+        const totalCredit = currentCredits.reduce((sum, c) => sum + (c.amount - c.paid_amount), 0);
+        
+        const statusBreakdown = [
+          { name: 'Outstanding Debts', value: totalDebt, color: '#EF4444' },
+          { name: 'Outstanding Credits', value: totalCredit, color: '#10B981' }
+        ].filter(item => item.value > 0);
+        
+        // Monthly trends for last 6 months
+        const monthlyTrends = [];
+        const now = new Date();
+        
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          const monthKey = date.toISOString().slice(0, 7);
+          const monthName = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+          
+          const monthDebts = debtCreditRecords
+            .filter(dc => dc.type === 'debt' && dc.created_at.startsWith(monthKey))
+            .reduce((sum, dc) => sum + dc.amount, 0);
+          
+          const monthCredits = debtCreditRecords
+            .filter(dc => dc.type === 'credit' && dc.created_at.startsWith(monthKey))
+            .reduce((sum, dc) => sum + dc.amount, 0);
+          
+          monthlyTrends.push({
+            month: monthName,
+            debts: monthDebts,
+            credits: monthCredits
+          });
+        }
+        
+        setDebtCreditData({
+          summary: {
+            totalDebt,
+            totalCredit,
+            netPosition: totalCredit - totalDebt
+          },
+          statusBreakdown,
+          monthlyTrends
+        });
+      }
+    } catch (error) {
+      console.error('Error loading debt/credit data:', error);
     }
   };
 
@@ -140,6 +207,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
       setShowForm(false);
       loadFinancialRecords();
       onUpdate();
+      loadDebtCreditData();
     } catch (error) {
       console.error('Error adding financial record:', error);
     }
@@ -155,6 +223,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
       
       loadFinancialRecords();
       onUpdate();
+      loadDebtCreditData();
     } catch (error) {
       console.error('Error deleting record:', error);
     }
@@ -284,6 +353,90 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
           </div>
         </div>
       </div>
+
+      {/* Debt & Credit Visualization */}
+      {(debtCreditData.summary.totalDebt > 0 || debtCreditData.summary.totalCredit > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Debt/Credit Status Pie Chart */}
+          <div className="liquid-glass p-6 rounded-lg shadow">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Outstanding Debt & Credit</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={debtCreditData.statusBreakdown}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {debtCreditData.statusBreakdown.map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value: number) => [`Ksh ${value.toLocaleString()}`, 'Amount']} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Monthly Debt/Credit Trends */}
+          <div className="liquid-glass p-6 rounded-lg shadow">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Debt & Credit Activity</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={debtCreditData.monthlyTrends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="month" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" tickFormatter={(value) => `Ksh ${(value / 1000).toFixed(0)}K`} />
+                <Tooltip 
+                  formatter={(value: number) => [`Ksh ${value.toLocaleString()}`, '']}
+                  contentStyle={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                />
+                <Legend />
+                <Bar dataKey="debts" fill="#EF4444" name="New Debts" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="credits" fill="#10B981" name="New Credits" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Net Position Summary */}
+      {(debtCreditData.summary.totalDebt > 0 || debtCreditData.summary.totalCredit > 0) && (
+        <div className="liquid-glass p-6 rounded-lg shadow mb-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Debt & Credit Summary</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-red-50 rounded-lg">
+              <AlertTriangle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-red-600">Ksh {debtCreditData.summary.totalDebt.toLocaleString()}</p>
+              <p className="text-sm text-red-700">Outstanding Debts</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-green-600">Ksh {debtCreditData.summary.totalCredit.toLocaleString()}</p>
+              <p className="text-sm text-green-700">Outstanding Credits</p>
+            </div>
+            <div className={`text-center p-4 rounded-lg ${
+              debtCreditData.summary.netPosition >= 0 ? 'bg-green-50' : 'bg-red-50'
+            }`}>
+              <DollarSign className={`h-8 w-8 mx-auto mb-2 ${
+                debtCreditData.summary.netPosition >= 0 ? 'text-green-500' : 'text-red-500'
+              }`} />
+              <p className={`text-2xl font-bold ${
+                debtCreditData.summary.netPosition >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
+                Ksh {debtCreditData.summary.netPosition.toLocaleString()}
+              </p>
+              <p className={`text-sm ${
+                debtCreditData.summary.netPosition >= 0 ? 'text-green-700' : 'text-red-700'
+              }`}>
+                Net Position
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Transaction Form */}
       {showForm && (
