@@ -9,6 +9,7 @@ import ExpenseTracker from './ExpenseTracker';
 import Reports from './Reports';
 import UserManagement from './UserManagement';
 import FinancialCharts from './FinancialCharts';
+import DebtCreditTracker from './DebtCreditTracker';
 
 interface DashboardProps {
   user: {
@@ -124,6 +125,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         { id: 'sheep', label: 'Sheep Management', icon: Sheep },
         { id: 'health', label: 'Health Monitor', icon: Heart },
         { id: 'finance', label: 'Finance', icon: DollarSign },
+        { id: 'debts', label: 'Debts & Credits', icon: DollarSign },
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'reports', label: 'Reports', icon: FileText },
         { id: 'users', label: 'User Management', icon: Users }
@@ -172,6 +174,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         return <HealthMonitor user={user} />;
       case 'finance':
         return user.role === 'admin' ? <FinanceTracker user={user} onUpdate={loadDashboardStats} /> : <AccessDenied />;
+      case 'debts':
+        return user.role === 'admin' ? <DebtCreditTracker user={user} onUpdate={loadDashboardStats} /> : <AccessDenied />;
       case 'analytics':
         return user.role === 'admin' ? <FinancialCharts user={user} /> : <AccessDenied />;
       case 'expenses':
