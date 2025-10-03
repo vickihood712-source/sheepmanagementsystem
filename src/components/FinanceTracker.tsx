@@ -31,7 +31,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
   const [dateRange, setDateRange] = useState('current_month');
   
   const expenseCategories = [
-    'feed', 'medical', 'equipment', 'maintenance', 'other'
+    'feed', 'medical', 'equipment', 'maintenance', 'labour', 'other'
   ];
   
   const revenueCategories = [
