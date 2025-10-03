@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Plus, Calendar, CheckCircle, Clock, AlertCircle, Trash2, Edit } from 'lucide-react';
+import { CreditCard, Plus, Calendar, CheckCircle, Clock, AlertCircle, Trash2, CreditCard as Edit } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface DebtCreditTrackerProps {
