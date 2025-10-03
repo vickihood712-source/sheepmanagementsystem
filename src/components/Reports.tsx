@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Download, FileText, Calendar, TrendingUp, Sheet as Sheep, DollarSign } from 'lucide-react';
+import { Download, FileText, Calendar, TrendingUp, Sheet as Sheep, DollarSign, AlertTriangle, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 interface ReportsProps {
   user: any;
@@ -11,6 +12,11 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState('overview');
   const [dateRange, setDateRange] = useState('current_month');
+  const [debtCreditData, setDebtCreditData] = useState<any>({
+    summary: { totalDebt: 0, totalCredit: 0, netPosition: 0 },
+    statusBreakdown: [],
+    monthlyTrends: []
+  });
 
   useEffect(() => {
     loadReportData();
@@ -60,6 +66,12 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       
       // Load alerts
       const { data: alertsData } = await supabase.from('alerts').select('*');
+
+      // Load debt/credit data
+      const { data: debtCreditRecords } = await supabase
+        .from('debts_credits')
+        .select('*')
+        .order('created_at', { ascending: true });
 
       // Process financial data
       const salesRecords = salesData || [];
@@ -131,6 +143,30 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
           vaccinationCompliance: sheepData?.filter(s => s.vaccination_status === 'up_to_date').length || 0
         }
       });
+      
+      // Process debt/credit data
+      if (debtCreditRecords) {
+        const currentDebts = debtCreditRecords.filter(dc => dc.type === 'debt' && dc.status !== 'paid');
+        const currentCredits = debtCreditRecords.filter(dc => dc.type === 'credit' && dc.status !== 'paid');
+        
+        const totalDebt = currentDebts.reduce((sum, d) => sum + (d.amount - d.paid_amount), 0);
+        const totalCredit = currentCredits.reduce((sum, c) => sum + (c.amount - c.paid_amount), 0);
+        
+        const statusBreakdown = [
+          { name: 'Outstanding Debts', value: totalDebt, color: '#EF4444' },
+          { name: 'Outstanding Credits', value: totalCredit, color: '#10B981' }
+        ].filter(item => item.value > 0);
+        
+        setDebtCreditData({
+          summary: {
+            totalDebt,
+            totalCredit,
+            netPosition: totalCredit - totalDebt
+          },
+          statusBreakdown,
+          records: debtCreditRecords
+        });
+      }
     } catch (error) {
       console.error('Error loading report data:', error);
     } finally {
@@ -213,10 +249,17 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
             total_expenses: reportData.financial?.expenses || 0,
             net_profit: reportData.financial?.profit || 0,
             health_score: reportData.health?.healthScore || 0,
+            total_debt: debtCreditData.summary?.totalDebt || 0,
+            total_credit: debtCreditData.summary?.totalCredit || 0,
+            net_position: debtCreditData.summary?.netPosition || 0,
             generated_date: new Date().toISOString().split('T')[0],
             date_range: dateRange
           }];
           filename = `overview_report_${dateRange}.csv`;
+          break;
+        case 'debts':
+          data = debtCreditData.records || [];
+          filename = `debt_credit_report_${dateRange}.csv`;
           break;
       }
 
@@ -271,7 +314,8 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
               { id: 'overview', label: 'Overview', icon: TrendingUp },
               { id: 'flock', label: 'Flock Analysis', icon: Sheep },
               { id: 'financial', label: 'Financial', icon: DollarSign },
-              { id: 'health', label: 'Health', icon: FileText }
+              { id: 'health', label: 'Health', icon: FileText },
+              { id: 'debts', label: 'Debt & Credit', icon: CreditCard }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -532,6 +576,156 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedReport === 'debts' && (
+        <div className="space-y-6">
+          {/* Debt/Credit Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="liquid-glass p-6 rounded-lg shadow border border-red-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-red-600 text-sm font-medium">Outstanding Debts</p>
+                  <p className="text-3xl font-bold text-red-700">
+                    {formatCurrency(debtCreditData.summary?.totalDebt || 0)}
+                  </p>
+                  <p className="text-sm text-red-600 mt-1">Money you owe</p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-red-400" />
+              </div>
+            </div>
+
+            <div className="liquid-glass p-6 rounded-lg shadow border border-green-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-600 text-sm font-medium">Outstanding Credits</p>
+                  <p className="text-3xl font-bold text-green-700">
+                    {formatCurrency(debtCreditData.summary?.totalCredit || 0)}
+                  </p>
+                  <p className="text-sm text-green-600 mt-1">Money owed to you</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-green-400" />
+              </div>
+            </div>
+
+            <div className={`liquid-glass p-6 rounded-lg shadow border ${
+              (debtCreditData.summary?.netPosition || 0) >= 0 ? 'border-green-200' : 'border-red-200'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`${
+                    (debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                  } text-sm font-medium`}>Net Position</p>
+                  <p className={`text-3xl font-bold ${
+                    (debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {formatCurrency(debtCreditData.summary?.netPosition || 0)}
+                  </p>
+                  <p className={`text-sm mt-1 ${
+                    (debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {(debtCreditData.summary?.netPosition || 0) >= 0 ? 'Positive position' : 'Negative position'}
+                  </p>
+                </div>
+                <DollarSign className={`h-8 w-8 ${
+                  (debtCreditData.summary?.netPosition || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                }`} />
+              </div>
+            </div>
+          </div>
+
+          {/* Debt/Credit Visualization */}
+          {debtCreditData.statusBreakdown.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Status Breakdown Pie Chart */}
+              <div className="liquid-glass p-6 rounded-lg shadow">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Debt & Credit Breakdown</h3>
+                  <button
+                    onClick={() => downloadReport('debts')}
+                    className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    Export
+                  </button>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={debtCreditData.statusBreakdown}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {debtCreditData.statusBreakdown.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: number) => [formatCurrency(value), 'Amount']} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Debt/Credit Details Table */}
+              <div className="liquid-glass p-6 rounded-lg shadow">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Debt & Credit Activity</h3>
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+                  {(debtCreditData.records || []).slice(0, 10).map((record: any) => (
+                    <div key={record.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{record.counterparty}</div>
+                        <div className="text-xs text-gray-500">{record.description}</div>
+                        <div className="text-xs text-gray-400">
+                          {new Date(record.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-sm font-medium ${
+                          record.type === 'debt' ? 'text-red-600' : 'text-green-600'
+                        }`}>
+                          {formatCurrency(record.amount - record.paid_amount)}
+                        </div>
+                        <div className={`text-xs px-2 py-1 rounded-full ${
+                          record.type === 'debt' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                        }`}>
+                          {record.type === 'debt' ? 'You Owe' : 'Owed to You'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {(!debtCreditData.records || debtCreditData.records.length === 0) && (
+                    <div className="text-center py-8 text-gray-500">
+                      No debt or credit records found
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Download Section */}
+          <div className="liquid-glass p-6 rounded-lg shadow">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">Export Debt & Credit Report</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Download a comprehensive report of all debt and credit records
+                </p>
+              </div>
+              <button
+                onClick={() => downloadReport('debts')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Full Report
+              </button>
             </div>
           </div>
         </div>
