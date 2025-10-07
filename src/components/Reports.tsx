@@ -691,15 +691,15 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
               </div>
 
               {/* Debt/Credit Details Table */}
-              <div className="liquid-glass p-4 md:p-6 rounded-lg shadow">
+              <div className="liquid-glass p-4 md:p-6 rounded-lg shadow overflow-hidden">
                 <h3 className="text-base md:text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
                 
                 {/* Mobile-friendly horizontal scroll container */}
-                <div className="overflow-x-auto -mx-4 md:mx-0">
-                  <div className="min-w-full px-4 md:px-0">
-                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                <div className="overflow-x-auto -mx-4 md:mx-0" style={{ maxHeight: '320px' }}>
+                  <div className="px-4 md:px-0" style={{ minWidth: '600px' }}>
+                    <div className="space-y-3">
                   {(debtCreditData.records || []).slice(0, 10).map((record: any) => (
-                        <div key={record.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-lg space-y-2 sm:space-y-0 min-w-[300px] sm:min-w-0">
+                        <div key={record.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-lg space-y-2 sm:space-y-0" style={{ minWidth: '500px' }}>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-gray-900 truncate">{record.counterparty}</div>
                             <div className="text-xs text-gray-500 truncate">{record.description}</div>

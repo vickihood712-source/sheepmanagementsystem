@@ -268,7 +268,10 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
 
       {/* Records Table */}
       <div className="liquid-glass shadow rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+        {/* Mobile-friendly horizontal scroll container */}
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="min-w-full px-4 sm:px-0">
+            <table className="min-w-full divide-y divide-gray-200" style={{ minWidth: '800px' }}>
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -363,6 +366,8 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
             ))}
           </tbody>
         </table>
+          </div>
+        </div>
 
         {filteredRecords.length === 0 && (
           <div className="text-center py-8 text-gray-500">
