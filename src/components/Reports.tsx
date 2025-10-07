@@ -584,7 +584,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       {selectedReport === 'debts' && (
         <div className="space-y-6">
           {/* Debt/Credit Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             <div className="liquid-glass p-6 rounded-lg shadow border border-red-200">
               <div className="flex items-center justify-between">
                 <div>
@@ -639,9 +639,9 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
 
           {/* Debt/Credit Visualization */}
           {debtCreditData.statusBreakdown.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Status Breakdown Pie Chart */}
-              <div className="liquid-glass p-6 rounded-lg shadow">
+              <div className="liquid-glass p-4 md:p-6 rounded-lg shadow">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium text-gray-900">Debt & Credit Breakdown</h3>
                   <button
@@ -652,7 +652,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                     Export
                   </button>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                   <PieChart>
                     <Pie
                       data={debtCreditData.statusBreakdown}
@@ -674,25 +674,29 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
               </div>
 
               {/* Debt/Credit Details Table */}
-              <div className="liquid-glass p-6 rounded-lg shadow">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Debt & Credit Activity</h3>
-                <div className="space-y-3 max-h-80 overflow-y-auto">
+              <div className="liquid-glass p-4 md:p-6 rounded-lg shadow">
+                <h3 className="text-base md:text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+                
+                {/* Mobile-friendly horizontal scroll container */}
+                <div className="overflow-x-auto -mx-4 md:mx-0">
+                  <div className="min-w-full px-4 md:px-0">
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
                   {(debtCreditData.records || []).slice(0, 10).map((record: any) => (
-                    <div key={record.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{record.counterparty}</div>
-                        <div className="text-xs text-gray-500">{record.description}</div>
-                        <div className="text-xs text-gray-400">
+                        <div key={record.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-lg space-y-2 sm:space-y-0 min-w-[300px] sm:min-w-0">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-gray-900 truncate">{record.counterparty}</div>
+                            <div className="text-xs text-gray-500 truncate">{record.description}</div>
+                            <div className="text-xs text-gray-400">
                           {new Date(record.created_at).toLocaleDateString()}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className={`text-sm font-medium ${
+                          <div className="text-left sm:text-right flex-shrink-0">
+                            <div className={`text-sm font-medium ${
                           record.type === 'debt' ? 'text-red-600' : 'text-green-600'
                         }`}>
                           {formatCurrency(record.amount - record.paid_amount)}
                         </div>
-                        <div className={`text-xs px-2 py-1 rounded-full ${
+                            <div className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${
                           record.type === 'debt' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
                         }`}>
                           {record.type === 'debt' ? 'You Owe' : 'Owed to You'}
@@ -700,31 +704,35 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                       </div>
                     </div>
                   ))}
+                    </div>
+                  </div>
+                </div>
+                
                   {(!debtCreditData.records || debtCreditData.records.length === 0) && (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-6 text-gray-500 text-sm">
                       No debt or credit records found
                     </div>
                   )}
-                </div>
               </div>
             </div>
           )}
 
           {/* Download Section */}
-          <div className="liquid-glass p-6 rounded-lg shadow">
+          <div className="liquid-glass p-4 md:p-6 rounded-lg shadow">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-medium text-gray-900">Export Debt & Credit Report</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="text-base md:text-lg font-medium text-gray-900">Export Report</h3>
+                <p className="text-xs md:text-sm text-gray-600 mt-1">
                   Download a comprehensive report of all debt and credit records
                 </p>
               </div>
               <button
                 onClick={() => downloadReport('debts')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                className="inline-flex items-center px-3 md:px-4 py-2 border border-gray-300 text-xs md:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
-                <Download className="h-4 w-4 mr-2" />
-                Download Full Report
+                <Download className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Download Full Report</span>
+                <span className="sm:hidden">Export</span>
               </button>
             </div>
           </div>
