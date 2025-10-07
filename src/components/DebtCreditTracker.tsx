@@ -32,7 +32,8 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
     counterparty: '',
     due_date: '',
     status: 'pending' as 'pending' | 'partial' | 'paid',
-    paid_amount: '0'
+    paid_amount: '0',
+    reference: ''
   });
   const [filter, setFilter] = useState('all');
 
@@ -102,7 +103,8 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
       counterparty: '',
       due_date: '',
       status: 'pending',
-      paid_amount: '0'
+      paid_amount: '0',
+      reference: ''
     });
     setShowForm(false);
     setEditingRecord(null);
@@ -117,7 +119,8 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
       counterparty: record.counterparty,
       due_date: record.due_date || '',
       status: record.status,
-      paid_amount: record.paid_amount.toString()
+      paid_amount: record.paid_amount.toString(),
+      reference: record.reference || ''
     });
     setShowForm(true);
   };
@@ -425,6 +428,19 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Link to Financial Record (Optional)</label>
+                  <div className="text-xs text-gray-500 mb-2">
+                    This helps track the connection between your debts/credits and actual transactions
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400"
+                    value={formData.reference || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, reference: e.target.value }))}
+                    placeholder="e.g., Invoice #123, Purchase Order #456"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Due Date (Optional)</label>
                   <input

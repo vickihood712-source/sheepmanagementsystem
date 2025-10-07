@@ -384,7 +384,12 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
       {/* Recent Transactions */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Recent Transactions</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium text-gray-900">Recent Transactions</h3>
+            <div className="text-sm text-gray-500">
+              💡 Tip: Link debts/credits to track payment obligations
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -404,6 +409,9 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Payment Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -433,6 +441,17 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
                     <span className={record.type === 'revenue' ? 'text-green-600' : 'text-red-600'}>
                       {record.type === 'revenue' ? '+' : '-'}Ksh {record.amount.toLocaleString()}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {record.type === 'expense' ? (
+                      <span className="inline-flex px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
+                        May need tracking
+                      </span>
+                    ) : (
+                      <span className="inline-flex px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                        Received
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     {(user.role === 'admin' || user.role === 'farmer') && (
