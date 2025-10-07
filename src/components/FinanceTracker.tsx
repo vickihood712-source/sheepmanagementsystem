@@ -450,12 +450,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
       {/* Recent Transactions */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium text-gray-900">Recent Transactions</h3>
-            <div className="text-sm text-gray-500">
-              💡 Tip: Link debts/credits to track payment obligations
-            </div>
-          </div>
+          <h3 className="text-lg font-medium text-gray-900">Recent Transactions</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
