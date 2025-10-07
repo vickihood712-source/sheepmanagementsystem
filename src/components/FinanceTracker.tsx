@@ -30,6 +30,64 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
   });
   const [dateRange, setDateRange] = useState('current_month');
   
+  const createDebtRecord = async (financialRecord: any) => {
+    const confirmed = confirm(`Create a debt record for this ${financialRecord.type}?\n\nAmount: Ksh ${financialRecord.amount.toLocaleString()}\nDescription: ${financialRecord.description || 'Financial transaction'}`);
+    
+    if (!confirmed) return;
+    
+    try {
+      const { error } = await supabase
+        .from('debts_credits')
+        .insert([{
+          type: 'debt',
+          amount: financialRecord.amount,
+          description: `Linked to ${financialRecord.type}: ${financialRecord.description || 'Financial transaction'}`,
+          counterparty: financialRecord.description || 'Supplier',
+          status: 'pending',
+          paid_amount: 0,
+          reference: `Finance Record: ${financialRecord.id}`,
+          created_by: user.id
+        }]);
+      
+      if (error) throw error;
+      
+      alert('Debt record created successfully!');
+      onUpdate();
+    } catch (error) {
+      console.error('Error creating debt record:', error);
+      alert('Failed to create debt record');
+    }
+  };
+
+  const createCreditRecord = async (financialRecord: any) => {
+    const confirmed = confirm(`Create a credit record for this ${financialRecord.type}?\n\nAmount: Ksh ${financialRecord.amount.toLocaleString()}\nDescription: ${financialRecord.description || 'Financial transaction'}`);
+    
+    if (!confirmed) return;
+    
+    try {
+      const { error } = await supabase
+        .from('debts_credits')
+        .insert([{
+          type: 'credit',
+          amount: financialRecord.amount,
+          description: `Linked to ${financialRecord.type}: ${financialRecord.description || 'Financial transaction'}`,
+          counterparty: financialRecord.description || 'Customer',
+          status: 'pending',
+          paid_amount: 0,
+          reference: `Finance Record: ${financialRecord.id}`,
+          created_by: user.id
+        }]);
+      
+      if (error) throw error;
+      
+      alert('Credit record created successfully!');
+      onUpdate();
+    } catch (error) {
+      console.error('Error creating credit record:', error);
+      alert('Failed to create credit record');
+    }
+  };
+
   const expenseCategories = [
     'feed', 'medical', 'equipment', 'maintenance', 'labour', 'other'
   ];

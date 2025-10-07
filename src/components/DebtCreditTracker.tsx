@@ -433,7 +433,7 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Link to Financial Record (Optional)</label>
-                  <div className="text-xs text-gray-500 mb-2">
+                  <div className="text-xs text-blue-600 mb-2">
                     This helps track the connection between your debts/credits and actual transactions
                   </div>
                   <input
