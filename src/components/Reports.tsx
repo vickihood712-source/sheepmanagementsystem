@@ -23,9 +23,15 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
   }, [dateRange]);
 
   const loadReportData = async () => {
+    setLoading(true);
     try {
-      // Load sheep data
-      const { data: sheepData } = await supabase.from('sheep').select('*');
+      // Load sheep data with error handling
+      const { data: sheepData, error: sheepError } = await supabase
+        .from('sheep')
+        .select('*')
+        .limit(1000); // Reasonable limit
+      
+      if (sheepError) throw sheepError;
       
       // Load financial data from sales_records and expenses with proper date filtering
       let salesQuery = supabase.from('sales_records').select('*');
@@ -61,17 +67,28 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
       salesQuery = salesQuery.gte('date', startDateStr).lte('date', endDateStr);
       expensesQuery = expensesQuery.gte('date', startDateStr).lte('date', endDateStr);
       
-      const { data: salesData } = await salesQuery;
-      const { data: expensesData } = await expensesQuery;
+      const { data: salesData, error: salesError } = await salesQuery.limit(200);
+      const { data: expensesData, error: expensesError } = await expensesQuery.limit(200);
       
-      // Load alerts
-      const { data: alertsData } = await supabase.from('alerts').select('*');
+      if (salesError) throw salesError;
+      if (expensesError) throw expensesError;
+      
+      // Load alerts with limit
+      const { data: alertsData, error: alertsError } = await supabase
+        .from('alerts')
+        .select('*')
+        .limit(100);
+      
+      if (alertsError) throw alertsError;
 
-      // Load debt/credit data
-      const { data: debtCreditRecords } = await supabase
+      // Load debt/credit data with limit
+      const { data: debtCreditRecords, error: debtError } = await supabase
         .from('debts_credits')
         .select('*')
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .limit(200);
+      
+      if (debtError) throw debtError;
 
       // Process financial data
       const salesRecords = salesData || [];

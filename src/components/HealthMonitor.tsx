@@ -31,8 +31,9 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
   }, []);
 
   const loadHealthData = async () => {
+    setLoading(true);
     try {
-      let query = supabase.from('sheep').select('*');
+      let query = supabase.from('sheep').select('*').limit(500); // Add reasonable limit
       
       // Role-based filtering
       if (user.role === 'farmer') {
@@ -53,12 +54,14 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
       setHealthData(analyzedData);
     } catch (error) {
       console.error('Error loading health data:', error);
+      setHealthData([]); // Set empty array on error
+    } finally {
+      setLoading(false);
     }
   };
 
   const loadAlerts = async () => {
     try {
-      // Since health_alerts doesn't exist, we'll use health_records to simulate alerts
       let query = supabase.from('health_records').select(`
           id,
           sheep_id,
@@ -66,7 +69,9 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
           description,
           created_at,
           sheep (ear_tag, breed)
-        `).in('record_type', ['illness', 'checkup']);
+        `)
+        .in('record_type', ['illness', 'checkup'])
+        .limit(50); // Add limit to prevent large queries
       
       // Role-based filtering for health records
       if (user.role === 'farmer') {
@@ -74,9 +79,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
         // For now, we'll show all records but in production you'd join with sheep table
       }
       
-      const { data, error } = await query
-        .order('created_at', { ascending: false })
-        .limit(50);
+      const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) throw error;
       
@@ -94,8 +97,7 @@ const HealthMonitor: React.FC<HealthMonitorProps> = ({ user }) => {
       setAlerts(alertsData);
     } catch (error) {
       console.error('Error loading health alerts:', error);
-    } finally {
-      setLoading(false);
+      setAlerts([]); // Set empty array on error
     }
   };
 

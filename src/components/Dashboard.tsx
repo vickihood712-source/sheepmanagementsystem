@@ -55,11 +55,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   }, []);
 
   const loadDashboardStats = async () => {
+    setLoading(true);
     try {
-      // Load sheep statistics
+      // Load sheep statistics with limit and error handling
       const { data: sheepData, error: sheepError } = await supabase
         .from('sheep')
-        .select('health_status, estimated_value');
+        .select('health_status, estimated_value')
+        .limit(1000); // Reasonable limit for stats
       
       if (sheepError) throw sheepError;
 
@@ -68,17 +70,23 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
       
-      const { data: salesData } = await supabase
+      const { data: salesData, error: salesError } = await supabase
         .from('sales_records')
         .select('amount, date')
         .gte('date', startOfMonth)
-        .lte('date', endOfMonth);
+        .lte('date', endOfMonth)
+        .limit(100);
       
-      const { data: expensesData } = await supabase
+      if (salesError) throw salesError;
+      
+      const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
         .select('amount, date')
         .gte('date', startOfMonth)
-        .lte('date', endOfMonth);
+        .lte('date', endOfMonth)
+        .limit(100);
+      
+      if (expensesError) throw expensesError;
 
       // Calculate statistics
       const totalSheep = sheepData?.length || 0;

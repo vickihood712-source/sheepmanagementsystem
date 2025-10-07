@@ -43,17 +43,24 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
   }, [dateRange]);
 
   const loadFinancialRecords = async () => {
+    setLoading(true);
     try {
-      // Load from sales_records and expenses tables
-      const { data: salesData } = await supabase
+      // Load from sales_records and expenses tables with limits
+      const { data: salesData, error: salesError } = await supabase
         .from('sales_records')
         .select('id, amount, date, buyer_seller, created_at')
-        .order('date', { ascending: false });
+        .order('date', { ascending: false })
+        .limit(50);
       
-      const { data: expensesData } = await supabase
+      if (salesError) throw salesError;
+      
+      const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
         .select('id, amount, date, description, category, created_at')
-        .order('date', { ascending: false });
+        .order('date', { ascending: false })
+        .limit(50);
+      
+      if (expensesError) throw expensesError;
 
       // Apply date filter
       const now = new Date();
@@ -93,6 +100,7 @@ const FinanceTracker: React.FC<FinanceTrackerProps> = ({ user, onUpdate }) => {
       setRecords(allRecords);
     } catch (error) {
       console.error('Error loading financial records:', error);
+      setRecords([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

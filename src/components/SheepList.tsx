@@ -24,8 +24,9 @@ const SheepList: React.FC<SheepListProps> = ({ user, onEdit }) => {
   }, [sheep, searchTerm, filterStatus, sortBy]);
 
   const loadSheep = async () => {
+    setLoading(true);
     try {
-      let query = supabase.from('sheep').select('*');
+      let query = supabase.from('sheep').select('*').limit(200); // Add reasonable limit
       
       // Role-based filtering - farmers only see their own sheep
       if (user.role === 'farmer') {
@@ -40,6 +41,7 @@ const SheepList: React.FC<SheepListProps> = ({ user, onEdit }) => {
       setSheep(data || []);
     } catch (error) {
       console.error('Error loading sheep:', error);
+      setSheep([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

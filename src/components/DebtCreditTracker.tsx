@@ -42,16 +42,19 @@ const DebtCreditTracker: React.FC<DebtCreditTrackerProps> = ({ user, onUpdate })
   }, []);
 
   const loadRecords = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('debts_credits')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100); // Limit to prevent large queries
 
       if (error) throw error;
       setRecords(data || []);
     } catch (error) {
       console.error('Error loading debt/credit records:', error);
+      setRecords([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
