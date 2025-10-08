@@ -3,6 +3,7 @@ import { supabase } from './lib/supabase';
 import LandingPage from './components/LandingPage';
 import AuthForm from './components/AuthForm';
 import Dashboard from './components/Dashboard';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 interface User {
   id: string;
@@ -76,6 +77,7 @@ function App() {
 
   return (
     <div className="min-h-screen">
+      <PWAInstallPrompt />
       {currentView === 'landing' && (
         <LandingPage onShowAuth={showAuth} />
       )}
