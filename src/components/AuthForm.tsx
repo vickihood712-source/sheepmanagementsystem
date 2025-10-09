@@ -26,6 +26,29 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isAdminRegistration, setIsAdminRegistration] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}`,
+      });
+
+      if (resetError) throw resetError;
+
+      setResetEmailSent(true);
+    } catch (err: any) {
+      console.error('Password reset error:', err);
+      setError(err.message || 'Failed to send reset email');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,6 +134,89 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
     }
   };
 
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="form-glass rounded-2xl shadow-xl p-8 border border-green-100">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mb-4">
+                <Sheep className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                Reset Password
+              </h2>
+              <p className="text-gray-600 mt-2">
+                Enter your email to receive a password reset link
+              </p>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {error}
+              </div>
+            )}
+
+            {resetEmailSent ? (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+                <p className="font-medium">Email sent!</p>
+                <p className="text-sm mt-1">
+                  Check your email for a password reset link. If you don't see it, check your spam folder.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                    placeholder="Enter your email"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-200 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 ${
+                    loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'
+                  }`}
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Sending...
+                    </div>
+                  ) : (
+                    'Send Reset Link'
+                  )}
+                </button>
+              </form>
+            )}
+
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => {
+                  setShowForgotPassword(false);
+                  setResetEmailSent(false);
+                  setError('');
+                }}
+                className="text-gray-600 hover:text-gray-800 font-medium transition-colors"
+              >
+                ← Back to Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -123,9 +229,9 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
               {mode === 'login' ? 'Welcome Back' : isAdminRegistration ? 'Admin Registration' : 'Join Our Farm'}
             </h2>
             <p className="text-gray-600 mt-2">
-              {mode === 'login' 
-                ? 'Sign in to manage your sheep farm' 
-                : isAdminRegistration 
+              {mode === 'login'
+                ? 'Sign in to manage your sheep farm'
+                : isAdminRegistration
                 ? 'Create an administrator account'
                 : 'Create your account to get started'
               }
@@ -257,6 +363,14 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
           </form>
 
           <div className="mt-6 text-center space-y-4">
+            {mode === 'login' && (
+              <button
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+              >
+                Forgot Password?
+              </button>
+            )}
             {mode === 'register' && (
               <button
                 onClick={() => setIsAdminRegistration(!isAdminRegistration)}
