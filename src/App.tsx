@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import AuthForm from './components/AuthForm';
 import Dashboard from './components/Dashboard';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import ResetPassword from './components/ResetPassword';
 
 interface User {
   id: string;
@@ -13,29 +14,38 @@ interface User {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'landing' | 'auth' | 'dashboard'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'auth' | 'dashboard' | 'reset-password'>('landing');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setCurrentView('reset-password');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const checkUser = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
         const { data: profile } = await supabase
           .from('users')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', session.user.id)
           .maybeSingle();
-        
+
         if (profile) {
           setUser({
-            id: user.id,
-            email: user.email!,
+            id: session.user.id,
+            email: session.user.email!,
             role: profile.role,
             name: profile.full_name
           });
@@ -44,7 +54,6 @@ function App() {
       }
     } catch (error) {
       console.error('Error checking user:', error);
-      // If Supabase is not configured, stay on landing page
       setCurrentView('landing');
     } finally {
       setLoading(false);
@@ -82,11 +91,14 @@ function App() {
         <LandingPage onShowAuth={showAuth} />
       )}
       {currentView === 'auth' && (
-        <AuthForm 
-          mode={authMode} 
+        <AuthForm
+          mode={authMode}
           onAuth={handleAuth}
           onBack={() => setCurrentView('landing')}
         />
+      )}
+      {currentView === 'reset-password' && (
+        <ResetPassword onComplete={checkUser} />
       )}
       {currentView === 'dashboard' && user && (
         <Dashboard user={user} onLogout={handleLogout} />
