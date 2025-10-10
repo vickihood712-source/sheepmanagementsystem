@@ -25,7 +25,6 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isAdminRegistration, setIsAdminRegistration] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
@@ -81,13 +80,6 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
         }
       } else {
         // Registration
-        const finalRole = isAdminRegistration ? 'admin' : role;
-
-        // Validate admin code if admin registration
-        if (isAdminRegistration && adminCode !== 'SHEEP_ADMIN_2024') {
-          throw new Error('Invalid admin code');
-        }
-
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
           password,
@@ -112,7 +104,7 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
                 id: authData.user.id,
                 email,
                 full_name: fullName,
-                role: finalRole,
+                role: role,
               },
             ])
             .select('id, email, full_name, role')
@@ -226,13 +218,11 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
               <Sheep className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-              {mode === 'login' ? 'Welcome Back' : isAdminRegistration ? 'Admin Registration' : 'Join Our Farm'}
+              {mode === 'login' ? 'Welcome Back' : 'Join Our Farm'}
             </h2>
             <p className="text-gray-600 mt-2">
               {mode === 'login'
                 ? 'Sign in to manage your sheep farm'
-                : isAdminRegistration
-                ? 'Create an administrator account'
                 : 'Create your account to get started'
               }
             </p>
@@ -244,17 +234,6 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
             </div>
           )}
 
-          {mode === 'register' && isAdminRegistration && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-              <div className="flex items-center">
-                <Shield className="w-5 h-5 mr-2" />
-                <span className="font-medium">Admin Registration</span>
-              </div>
-              <p className="text-sm mt-1">
-                You need a special admin code to create an administrator account.
-              </p>
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {mode === 'register' && (
@@ -310,7 +289,7 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
               </div>
             </div>
 
-            {mode === 'register' && !isAdminRegistration && (
+            {mode === 'register' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Role
@@ -326,30 +305,11 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
               </div>
             )}
 
-            {mode === 'register' && isAdminRegistration && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Admin Code
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={adminCode}
-                  onChange={(e) => setAdminCode(e.target.value)}
-                  className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
-                  placeholder="Enter admin code"
-                />
-              </div>
-            )}
 
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-200 ${
-                isAdminRegistration
-                  ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
-                  : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600'
-              } ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'}`}
+              className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-200 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'}`}
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -357,7 +317,7 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
                   Processing...
                 </div>
               ) : (
-                mode === 'login' ? 'Sign In' : isAdminRegistration ? 'Create Admin Account' : 'Create Account'
+                mode === 'login' ? 'Sign In' : 'Create Account'
               )}
             </button>
           </form>
@@ -369,28 +329,6 @@ export default function AuthForm({ mode, onAuth, onBack }: AuthFormProps) {
                 className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
               >
                 Forgot Password?
-              </button>
-            )}
-            {mode === 'register' && (
-              <button
-                onClick={() => setIsAdminRegistration(!isAdminRegistration)}
-                className={`text-sm font-medium transition-colors ${
-                  isAdminRegistration
-                    ? 'text-green-600 hover:text-green-700'
-                    : 'text-red-600 hover:text-red-700'
-                }`}
-              >
-                {isAdminRegistration ? (
-                  <span className="flex items-center justify-center">
-                    <Users className="w-4 h-4 mr-1" />
-                    Regular Registration
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center">
-                    <Shield className="w-4 h-4 mr-1" />
-                    Admin Registration
-                  </span>
-                )}
               </button>
             )}
             
