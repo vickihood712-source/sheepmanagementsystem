@@ -5,6 +5,7 @@ import AuthForm from './components/AuthForm';
 import Dashboard from './components/Dashboard';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import ResetPassword from './components/ResetPassword';
+import AdminRegistration from './components/AdminRegistration';
 
 interface User {
   id: string;
@@ -14,12 +15,19 @@ interface User {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'landing' | 'auth' | 'dashboard' | 'reset-password'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'auth' | 'dashboard' | 'reset-password' | 'admin-register'>('landing');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#admin-register') {
+      setCurrentView('admin-register');
+      setLoading(false);
+      return;
+    }
+
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -95,6 +103,15 @@ function App() {
           mode={authMode}
           onAuth={handleAuth}
           onBack={() => setCurrentView('landing')}
+        />
+      )}
+      {currentView === 'admin-register' && (
+        <AdminRegistration
+          onAuth={handleAuth}
+          onBack={() => {
+            window.location.hash = '';
+            setCurrentView('landing');
+          }}
         />
       )}
       {currentView === 'reset-password' && (
