@@ -357,10 +357,10 @@ const AboutPage: React.FC = () => {
         <div className="liquid-glass rounded-xl p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Our Story</h2>
           <p className="text-gray-600 mb-4 leading-relaxed">
-            Founded in 2024, SheepMS was born from a simple observation: sheep farmers needed better tools to manage their flocks efficiently. Our founders, coming from both agricultural and technology backgrounds, recognized the gap between traditional farming methods and modern technology.
+            Founded in 2025, SheepMS was born from a simple observation: sheep farmers needed better tools to manage their flocks efficiently. Our founders, coming from both agricultural and technology backgrounds, recognized the gap between traditional farming methods and modern technology.
           </p>
           <p className="text-gray-600 leading-relaxed">
-            Today, SheepMS serves thousands of farmers across multiple countries, helping them increase productivity, reduce costs, and make data-driven decisions for their operations.
+            Today, SheepMS serves farmers across multiple places, helping them increase productivity, reduce costs, and make data-driven decisions for their operations.
           </p>
         </div>
 
